@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { apiFetch } from '../api';
 import ProductCard from '../components/ProductCard';
 
 const Home = () => {
@@ -8,7 +9,7 @@ const Home = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch('/api/products');
+        const res = await apiFetch('/api/products');
         const data = await res.json();
         setProducts(data.slice(0, 4)); // Featured products
       } catch (error) {

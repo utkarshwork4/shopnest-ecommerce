@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
+import { apiFetch } from '../api';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 
@@ -15,7 +16,7 @@ const Profile = () => {
     }
     const fetchMyOrders = async () => {
       try {
-        const res = await fetch('/api/orders/myorders', {
+        const res = await apiFetch('/api/orders/myorders', {
           headers: { Authorization: `Bearer ${user.token}` }
         });
         const data = await res.json();
