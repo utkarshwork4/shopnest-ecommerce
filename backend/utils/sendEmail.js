@@ -1,23 +1,16 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
 const sendEmail = async ({ email, subject, message }) => {
   try {
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASS, // App Password mapping
-      },
-    });
-
-    const mailOptions = {
-      from: `"ShopNest Support" <${process.env.GMAIL_USER}>`,
-      to: email,
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    const { error } = await resend.emails.send({
+      from: `ShopNest Support <${process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'}>`,
+      to: [email],
       subject: subject,
       html: message,
-    };
+    });
 
-    await transporter.sendMail(mailOptions);
+    if (error) throw error;
     console.log(`Email successfully sent to ${email}`);
   } catch (error) {
     console.error(`Failed to send email to ${email}:`, error);
