@@ -1,14 +1,12 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { apiFetch } from '../api';
 import { useNavigate, Link } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
 import '../styles/auth.css';
 
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -20,12 +18,16 @@ const Register = () => {
         body: JSON.stringify({ name, email, password })
       });
       const data = await res.json();
-      if (res.ok) {
-        alert('Registration Successful! Please check your email for the Welcome OTP.');
-        login(data);
-        navigate('/');
+      if (data.verificationRequired) {
+        navigate('/verify-otp', {
+          state: {
+            email: data.email || email,
+            notice: data.emailSent === false ? data.message : '',
+            retryAfterSeconds: Number(data.retryAfterSeconds) || 0,
+          },
+        });
       } else {
-        alert(data.message);
+        alert(data.message || 'Registration failed. Please try again.');
       }
     } catch (error) {
       console.error(error);

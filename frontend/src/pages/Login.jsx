@@ -1,11 +1,12 @@
 import React, { useState, useContext } from 'react';
 import { apiFetch } from '../api';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import '../styles/auth.css';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
+  const location = useLocation();
+  const [email, setEmail] = useState(location.state?.email || '');
   const [password, setPassword] = useState('');
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -22,6 +23,8 @@ const Login = () => {
       if (res.ok) {
         login(data);
         navigate('/');
+      } else if (data.verificationRequired) {
+        navigate('/verify-otp', { state: { email } });
       } else {
         alert(data.message);
       }
